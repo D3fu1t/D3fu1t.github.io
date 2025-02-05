@@ -141,29 +141,38 @@
             document.getElementById('chatBox').appendChild(botMessageDiv);
 
             try {
-                // Try sending the request with the current token
-                const response = await fetch('https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_TOKENS[currentTokenIndex]}`
-                    },
-                    body: JSON.stringify({
-                        inputs: message
-                    })
-                });
+                let retries = 3; // Retry up to 3 times
+                let response;
 
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+                while (retries > 0) {
+                    response = await fetch('https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${API_TOKENS[currentTokenIndex]}`
+                        },
+                        body: JSON.stringify({ inputs: message })
+                    });
+
+                    const data = await response.json();
+                    console.log("API Response:", data); // Log the full response for debugging
+
+                    if (data.error && data.error.includes("model is loading")) {
+                        retries--;
+                        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
+                    } else {
+                        break; // Exit loop if no error or a valid response is received
+                    }
                 }
 
-                const data = await response.json();
-                const botReply = data.generated_text || "I'm not sure how to respond to that.";
+                if (!response.ok || !data.generated_text) {
+                    throw new Error("Invalid response from API.");
+                }
 
                 // Update bot message
-                botMessageDiv.textContent = botReply;
+                botMessageDiv.textContent = data.generated_text || "I'm not sure how to respond to that.";
             } catch (error) {
-                console.error(error);
+                console.error("Error:", error);
 
                 // Switch to the next token if the current one fails
                 currentTokenIndex = (currentTokenIndex + 1) % API_TOKENS.length;
