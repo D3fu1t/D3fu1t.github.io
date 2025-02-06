@@ -109,15 +109,8 @@
     </footer>
 
     <script>
-        // List of Hugging Face API tokens (replace with your actual tokens)
-        const API_TOKENS = [
-            "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",
-            "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",
-            "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",
-            "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"
-        ];
-
-        let currentTokenIndex = 0; // Start with the first token
+        // OpenRouter API Key
+        const OPENROUTER_API_KEY = "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";
 
         async function sendMessage() {
             const userInput = document.getElementById('userInput');
@@ -141,50 +134,39 @@
             document.getElementById('chatBox').appendChild(botMessageDiv);
 
             try {
-                let retries = 3; // Retry up to 3 times
-                let response;
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "HTTP-Referer": "https://xlwenic.lua.ren", // Your site URL
+                        "X-Title": "XLwenic", // Your site title
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek/deepseek-r1:free", // Model to use
+                        messages: [
+                            {
+                                role: "user",
+                                content: message
+                            }
+                        ]
+                    })
+                });
 
-                while (retries > 0) {
-                    response = await fetch('https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${API_TOKENS[currentTokenIndex]}`
-                        },
-                        body: JSON.stringify({ inputs: message })
-                    });
+                const data = await response.json();
+                console.log("API Response:", data); // Log the full response for debugging
 
-                    const data = await response.json();
-                    console.log("API Response:", data); // Log the full response for debugging
-
-                    if (data.error && data.error.includes("model is loading")) {
-                        retries--;
-                        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
-                    } else {
-                        break; // Exit loop if no error or a valid response is received
-                    }
-                }
-
-                if (!response.ok || !data.generated_text) {
+                if (!response.ok || !data.choices || !data.choices[0].message.content) {
                     throw new Error("Invalid response from API.");
                 }
 
                 // Update bot message
-                botMessageDiv.textContent = data.generated_text || "I'm not sure how to respond to that.";
+                botMessageDiv.textContent = data.choices[0].message.content || "I'm not sure how to respond to that.";
             } catch (error) {
                 console.error("Error:", error);
 
-                // Switch to the next token if the current one fails
-                currentTokenIndex = (currentTokenIndex + 1) % API_TOKENS.length;
-
-                if (currentTokenIndex === 0) {
-                    // All tokens have been tried and failed
-                    botMessageDiv.textContent = "All APIs are unavailable. Please try again later.";
-                } else {
-                    // Retry with the next token
-                    botMessageDiv.textContent = "Switching to another API...";
-                    await sendMessage(); // Recursive call to retry
-                }
+                // Handle errors gracefully
+                botMessageDiv.textContent = "An error occurred. Please try again later.";
             }
 
             // Scroll to the bottom of the chat box
