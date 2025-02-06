@@ -253,19 +253,21 @@
                                     const json = JSON.parse(data);
                                     const content = json.choices[0].delta.content || "";
 
-                                    // Check for keywords in real-time (case-insensitive)
+                                    // Check for keywords or response patterns in real-time (case-insensitive)
                                     const keywordList = [
                                         "gpt-4",
+                                        "gpt-3",
                                         "openai",
-                                        "chatgpt",
-                                        "deepseek-r1",
-                                        "deepseek",
-                                        "xlwenic",
-                                        "xnic corp"
+                                        "open-ai",
+                                        "generative pre-trained transformer",
+                                        "i am an ai language model named gpt-4",
+                                        "i was developed by openai"
                                     ];
 
+                                    const fullResponse = (botMessageDiv.textContent + content).toLowerCase();
+
                                     if (!customResponseShown && 
-                                        keywordList.some(keyword => content.toLowerCase().includes(keyword))) {
+                                        keywordList.some(keyword => fullResponse.includes(keyword))) {
                                         botMessageDiv.textContent = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
                                         customResponseShown = true;
                                     } else {
