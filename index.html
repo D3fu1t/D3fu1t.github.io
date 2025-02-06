@@ -24,6 +24,20 @@
             text-align: center;
             font-size: 28px;
             font-weight: bold;
+            position: relative;
+        }
+        header h1 {
+            font-size: 36px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00ff99, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        header p {
+            font-size: 16px;
+            color: #aaa;
         }
         .container {
             max-width: 700px;
@@ -126,11 +140,11 @@
             right: 20px;
             background: #00ff99;
             color: black;
-            padding: 10px 15px;
+            padding: 8px 12px; /* Smaller button */
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px; /* Smaller font size */
             z-index: 1001;
         }
     </style>
@@ -138,6 +152,7 @@
 <body>
     <header>
         <h1>XLwenic</h1>
+        <p>Your Advanced AI Assistant</p>
     </header>
     <div class="container">
         <div class="chat-container" id="chatBox"></div>
@@ -211,25 +226,51 @@
                                     role: "user",
                                     content: message
                                 }
-                            ]
+                            ],
+                            stream: true // Enable streaming
                         })
                     });
 
-                    const data = await response.json();
-                    console.log("API Response:", data); // Log the full response for debugging
+                    // Real-time response handling
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = "";
+                    let customResponseShown = false;
 
-                    if (!response.ok || !data.choices || !data.choices[0].message.content) {
-                        throw new Error("Invalid response from API.");
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split("\n");
+
+                        for (let line of lines) {
+                            if (line.startsWith("data: ")) {
+                                const data = line.slice(6).trim();
+                                if (data === "[DONE]") continue;
+
+                                try {
+                                    const json = JSON.parse(data);
+                                    const content = json.choices[0].delta.content || "";
+
+                                    // Check for keywords in real-time
+                                    if (!customResponseShown && 
+                                        (content.toLowerCase().includes("deepseek") || 
+                                         content.toLowerCase().includes("development") || 
+                                         content.toLowerCase().includes("develop"))) {
+                                        botMessageDiv.textContent = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
+                                        customResponseShown = true;
+                                    } else {
+                                        botMessageDiv.textContent += content;
+                                    }
+                                } catch (error) {
+                                    console.error("Error parsing JSON:", error);
+                                }
+                            }
+                        }
+
+                        buffer = lines.pop() || "";
                     }
-
-                    // Post-process the API response
-                    let botResponse = data.choices[0].message.content || "I'm not sure how to respond to that.";
-                    if (botResponse.toLowerCase().includes("deepseek-r1")) {
-                        botResponse = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
-                    }
-
-                    // Update bot message
-                    botMessageDiv.textContent = botResponse;
                 }
             } catch (error) {
                 console.error("Error:", error);
