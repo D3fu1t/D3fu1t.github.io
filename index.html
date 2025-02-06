@@ -253,15 +253,19 @@
                                     const json = JSON.parse(data);
                                     const content = json.choices[0].delta.content || "";
 
-                                    // Check for keywords in real-time
+                                    // Check for keywords in real-time (case-insensitive)
+                                    const keywordList = [
+                                        "gpt-4",
+                                        "openai",
+                                        "chatgpt",
+                                        "deepseek-r1",
+                                        "deepseek",
+                                        "xlwenic",
+                                        "xnic corp"
+                                    ];
+
                                     if (!customResponseShown && 
-                                        (content.toLowerCase().includes("chatgpt") || 
-                                         content.toLowerCase().includes("openai") || 
-                                         content.toLowerCase().includes("deepseek-r1") || 
-                                         content.toLowerCase().includes("deepseek") || 
-                                         content.toLowerCase().includes("development") || 
-                                         content.toLowerCase().includes("develop") || 
-                                         content.toLowerCase().includes("chinese company deepseek"))) {
+                                        keywordList.some(keyword => content.toLowerCase().includes(keyword))) {
                                         botMessageDiv.textContent = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
                                         customResponseShown = true;
                                     } else {
