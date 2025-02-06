@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XLwenic - Your Free AI Assistant</title>
+    <title>XLwenic</title>
     <style>
         /* General Styles */
         * {
@@ -90,12 +90,54 @@
         footer a:hover {
             text-decoration: underline;
         }
+        /* Slide Navigation Styles */
+        .slide-nav {
+            position: fixed;
+            top: 20px;
+            right: -200px; /* Hidden by default */
+            width: 200px;
+            height: 100vh;
+            background: #1e1e1e;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.3);
+            transition: right 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .slide-nav.open {
+            right: 0; /* Show the navigation */
+        }
+        .slide-nav ul {
+            list-style: none;
+            padding: 20px;
+        }
+        .slide-nav ul li {
+            margin-bottom: 15px;
+        }
+        .slide-nav ul li a {
+            color: #00ff99;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .slide-nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .nav-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff99;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 1001;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>XLwenic</h1>
-        <p>Your Advanced AI Assistant</p>
     </header>
     <div class="container">
         <div class="chat-container" id="chatBox"></div>
@@ -107,6 +149,15 @@
     <footer>
         Made by <a href="about.html">Xnic Corp</a> | Powered by XLwenic
     </footer>
+
+    <!-- Slide Navigation -->
+    <button class="nav-toggle" onclick="toggleNav()">Menu</button>
+    <div class="slide-nav" id="slideNav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </div>
 
     <script>
         // OpenRouter API Key
@@ -135,39 +186,45 @@
 
             try {
                 // Customize the bot's response for specific questions
-                if (message.toLowerCase().includes("who are you")) {
-                    botMessageDiv.textContent = "I am XLwenic, your advanced AI assistant powered by Xnic Corp. How can I assist you today?";
-                    return;
+                const lowerCaseMessage = message.toLowerCase();
+                if (lowerCaseMessage.includes("who are you")) {
+                    botMessageDiv.textContent = "I am XLwenic, your advanced AI assistant powered by Xnic Corp.";
+                } else if (lowerCaseMessage.includes("who made you") || lowerCaseMessage.includes("who created you")) {
+                    botMessageDiv.textContent = "I was created by Xnic Corp, a company specializing in advanced AI technologies.";
+                } else if (lowerCaseMessage.includes("how were you made") || lowerCaseMessage.includes("how were you created")) {
+                    botMessageDiv.textContent = "I was developed using cutting-edge AI models and trained on vast datasets to assist users like you.";
+                } else if (lowerCaseMessage.includes("who is your owner") || lowerCaseMessage.includes("who owns you")) {
+                    botMessageDiv.textContent = "I am owned and managed by Xnic Corp, the creators of XLwenic.";
+                } else {
+                    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                            "HTTP-Referer": "https://xlwenic.lua.ren",
+                            "X-Title": "XLwenic",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            model: "deepseek/deepseek-r1:free",
+                            messages: [
+                                {
+                                    role: "user",
+                                    content: message
+                                }
+                            ]
+                        })
+                    });
+
+                    const data = await response.json();
+                    console.log("API Response:", data); // Log the full response for debugging
+
+                    if (!response.ok || !data.choices || !data.choices[0].message.content) {
+                        throw new Error("Invalid response from API.");
+                    }
+
+                    // Update bot message
+                    botMessageDiv.textContent = data.choices[0].message.content || "I'm not sure how to respond to that.";
                 }
-
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                        "HTTP-Referer": "https://xlwenic.lua.ren",
-                        "X-Title": "XLwenic",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: "deepseek/deepseek-r1:free",
-                        messages: [
-                            {
-                                role: "user",
-                                content: message
-                            }
-                        ]
-                    })
-                });
-
-                const data = await response.json();
-                console.log("API Response:", data); // Log the full response for debugging
-
-                if (!response.ok || !data.choices || !data.choices[0].message.content) {
-                    throw new Error("Invalid response from API.");
-                }
-
-                // Update bot message
-                botMessageDiv.textContent = data.choices[0].message.content || "I'm not sure how to respond to that.";
             } catch (error) {
                 console.error("Error:", error);
 
@@ -185,6 +242,12 @@
             messageDiv.textContent = message;
             messageDiv.className = `message ${sender}`;
             chatBox.appendChild(messageDiv);
+        }
+
+        // Slide Navigation Toggle
+        function toggleNav() {
+            const slideNav = document.getElementById('slideNav');
+            slideNav.classList.toggle('open');
         }
     </script>
 </body>
