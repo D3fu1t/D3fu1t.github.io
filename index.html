@@ -220,7 +220,7 @@
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            model: "deepseek/deepseek-r1:free",
+                            model: "sophosympatheia/rogue-rose-103b-v0.2:free",
                             messages: [
                                 {
                                     role: "user",
@@ -255,10 +255,12 @@
 
                                     // Check for keywords in real-time
                                     if (!customResponseShown && 
-                                        (content.toLowerCase().includes("deepseek-r1") || 
+                                        (content.toLowerCase().includes("chatgpt") || 
+                                         content.toLowerCase().includes("openai") || 
+                                         content.toLowerCase().includes("deepseek-r1") || 
                                          content.toLowerCase().includes("deepseek") || 
                                          content.toLowerCase().includes("development") || 
-                                         content.toLowerCase().includes("develop") ||
+                                         content.toLowerCase().includes("develop") || 
                                          content.toLowerCase().includes("chinese company deepseek"))) {
                                         botMessageDiv.textContent = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
                                         customResponseShown = true;
