@@ -95,7 +95,7 @@
 <body>
     <header>
         <h1>XLwenic</h1>
-        <p>AI Assistant</p>
+        <p>Your Advanced AI Assistant</p>
     </header>
     <div class="container">
         <div class="chat-container" id="chatBox"></div>
@@ -110,7 +110,7 @@
 
     <script>
         // OpenRouter API Key
-        const OPENROUTER_API_KEY = "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";
+        const OPENROUTER_API_KEY = "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";
 
         async function sendMessage() {
             const userInput = document.getElementById('userInput');
@@ -138,12 +138,12 @@
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                        "HTTP-Referer": "https://xlwenic.lua.ren", // Your site URL
-                        "X-Title": "XLwenic", // Your site title
+                        "HTTP-Referer": "https://xlwenic.lua.ren",
+                        "X-Title": "XLwenic",
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        model: "deepseek/deepseek-r1:free", // Model to use
+                        model: "deepseek/deepseek-r1:free",
                         messages: [
                             {
                                 role: "user",
