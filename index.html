@@ -255,9 +255,11 @@
 
                                     // Check for keywords in real-time
                                     if (!customResponseShown && 
-                                        (content.toLowerCase().includes("deepseek") || 
+                                        (content.toLowerCase().includes("deepseek-r1") || 
+                                         content.toLowerCase().includes("deepseek") || 
                                          content.toLowerCase().includes("development") || 
-                                         content.toLowerCase().includes("develop"))) {
+                                         content.toLowerCase().includes("develop") ||
+                                         content.toLowerCase().includes("chinese company deepseek"))) {
                                         botMessageDiv.textContent = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
                                         customResponseShown = true;
                                     } else {
