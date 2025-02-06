@@ -222,8 +222,14 @@
                         throw new Error("Invalid response from API.");
                     }
 
+                    // Post-process the API response
+                    let botResponse = data.choices[0].message.content || "I'm not sure how to respond to that.";
+                    if (botResponse.toLowerCase().includes("deepseek-r1")) {
+                        botResponse = "It's my AI name, XLwenic, and it's made by Xnic Corp.";
+                    }
+
                     // Update bot message
-                    botMessageDiv.textContent = data.choices[0].message.content || "I'm not sure how to respond to that.";
+                    botMessageDiv.textContent = botResponse;
                 }
             } catch (error) {
                 console.error("Error:", error);
