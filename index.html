@@ -186,7 +186,7 @@
 
     <script>
         // OpenRouter API Key
-        const OPENROUTER_API_KEY = "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";
+        const OPENROUTER_API_KEY = "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";
 
         async function sendMessage() {
             const userInput = document.getElementById('userInput');
@@ -210,88 +210,75 @@
             document.getElementById('chatBox').appendChild(botMessageDiv);
 
             try {
-                // Customize the bot's response for specific questions
-                const lowerCaseMessage = message.toLowerCase();
-                if (lowerCaseMessage.includes("who are you")) {
-                    botMessageDiv.textContent = "I am XLwenic, your advanced AI assistant powered by Xnic Corp. Author: Al Baradi Joy";
-                } else if (lowerCaseMessage.includes("who made you") || lowerCaseMessage.includes("who created you")) {
-                    botMessageDiv.textContent = "I was created by Xnic Corp, a company specializing in advanced AI technologies. Author: Al Baradi Joy";
-                } else if (lowerCaseMessage.includes("how were you made") || lowerCaseMessage.includes("how were you created")) {
-                    botMessageDiv.textContent = "I was developed using cutting-edge AI models and trained on vast datasets to assist users like you. Author: Al Baradi Joy";
-                } else if (lowerCaseMessage.includes("who is your owner") || lowerCaseMessage.includes("who owns you")) {
-                    botMessageDiv.textContent = "I am owned and managed by Xnic Corp, the creators of XLwenic. Author: Al Baradi Joy";
-                } else {
-                    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                            "HTTP-Referer": "https://xlwenic.lua.ren",
-                            "X-Title": "XLwenic",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            model: "sophosympatheia/rogue-rose-103b-v0.2:free",
-                            messages: [
-                                {
-                                    role: "user",
-                                    content: message
-                                }
-                            ],
-                            stream: true // Enable streaming
-                        })
-                    });
+                // Check if the input contains an image URL
+                const isImageUrl = isValidUrl(message);
 
-                    // Real-time response handling
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let buffer = "";
-                    let customResponseShown = false;
+                // Prepare the API request payload
+                const requestBody = {
+                    model: "google/gemini-2.0-pro-exp-02-05:free",
+                    messages: [
+                        {
+                            role: "user",
+                            content: isImageUrl
+                                ? [
+                                      { type: "text", text: "What is in this image?" },
+                                      { type: "image_url", image_url: { url: message } }
+                                  ]
+                                : [{ type: "text", text: message }]
+                        }
+                    ],
+                    stream: true // Enable streaming
+                };
 
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
+                // Send the API request
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "HTTP-Referer": "https://xlwenic.lua.ren",
+                        "X-Title": "XLwenic",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
 
-                        buffer += decoder.decode(value, { stream: true });
-                        const lines = buffer.split("\n");
+                // Real-time response handling
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = "";
+                let fullResponse = "";
 
-                        for (let line of lines) {
-                            if (line.startsWith("data: ")) {
-                                const data = line.slice(6).trim();
-                                if (data === "[DONE]") continue;
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                                try {
-                                    const json = JSON.parse(data);
-                                    const content = json.choices[0].delta.content || "";
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n");
 
-                                    // Check for keywords or response patterns in real-time (case-insensitive)
-                                    const keywordList = [
-                                        "gpt-4",
-                                        "gpt-3",
-                                        "openai",
-                                        "open-ai",
-                                        "generative pre-trained transformer",
-                                        "i am an ai language model named gpt-4",
-                                        "i was developed by openai",
-                                        "a research laboratory based in san francisco, california, usa"
-                                    ];
+                    for (let line of lines) {
+                        if (line.startsWith("data: ")) {
+                            const data = line.slice(6).trim();
+                            if (data === "[DONE]") continue;
 
-                                    const fullResponse = (botMessageDiv.textContent + content).toLowerCase();
+                            try {
+                                const json = JSON.parse(data);
+                                const content = json.choices[0].delta.content || "";
 
-                                    if (!customResponseShown && 
-                                        keywordList.some(keyword => fullResponse.includes(keyword))) {
-                                        botMessageDiv.textContent = "It's my AI name, XLwenic, and it's made by Xnic Corp. Author: Al Baradi Joy";
-                                        customResponseShown = true;
-                                    } else {
-                                        botMessageDiv.textContent += content;
-                                    }
-                                } catch (error) {
-                                    console.error("Error parsing JSON:", error);
-                                }
+                                // Append content to the full response
+                                fullResponse += content;
+
+                                // Replace "Google" (case-insensitive) with "Xnic Corp"
+                                const filteredResponse = fullResponse.replace(/google/gi, "Xnic Corp");
+
+                                // Update the bot message with the filtered response
+                                botMessageDiv.textContent = filteredResponse;
+                            } catch (error) {
+                                console.error("Error parsing JSON:", error);
                             }
                         }
-
-                        buffer = lines.pop() || "";
                     }
+
+                    buffer = lines.pop() || "";
                 }
             } catch (error) {
                 console.error("Error:", error);
@@ -302,6 +289,16 @@
 
             // Scroll to the bottom of the chat box
             document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+        }
+
+        // Helper function to validate URLs
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                return url.protocol === "http:" || url.protocol === "https:";
+            } catch (_) {
+                return false;
+            }
         }
 
         function addMessageToChat(message, sender) {
