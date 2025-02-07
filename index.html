@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XLwenic - Your AI Assistant</title>
+    <title>XLwenic</title>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RRVD3RER91"></script>
@@ -26,18 +26,18 @@
             background-color: #121212; /* Dark background */
             color: #ffffff; /* White text */
             line-height: 1.6;
-            overflow-x: hidden;
         }
-
-        /* Header */
         header {
-            background: linear-gradient(135deg, #000000, #2c3e50);
+            background: linear-gradient(135deg, #000000, #2c3e50); /* Black gradient */
             color: white;
-            padding: 20px;
+            padding: 20px 0;
             text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            position: relative;
         }
         header h1 {
-            font-size: 24px;
+            font-size: 36px;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 10px;
@@ -46,123 +46,143 @@
             -webkit-text-fill-color: transparent;
         }
         header p {
-            font-size: 14px;
+            font-size: 16px;
             color: #aaa;
         }
-
-        /* Chat Container */
-        .chat-container {
-            max-width: 600px;
+        .container {
+            max-width: 700px;
             margin: 20px auto;
-            background: #1e1e1e; /* Darker container */
+            padding: 20px;
+            background: #1e1e1e; /* Slightly lighter black */
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            height: 70vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
         }
-        .chat-box {
-            flex: 1;
+        .chat-container {
+            height: 500px;
             overflow-y: auto;
-            padding: 20px;
-            border-bottom: 1px solid #333;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #2a2a2a; /* Darker chat box */
         }
-        .chat-box .message {
+        .chat-container .message {
             margin-bottom: 15px;
         }
-        .chat-box .message.user {
+        .chat-container .message.user {
             text-align: right;
             color: #00ff99; /* Neon green for user messages */
         }
-        .chat-box .message.bot {
+        .chat-container .message.bot {
             text-align: left;
             color: #00ccff; /* Cyan for bot messages */
         }
-
-        /* Input Area */
-        .input-area {
+        .chat-input {
             display: flex;
-            padding: 10px;
-            background: #2a2a2a; /* Slightly lighter than the container */
         }
-        .input-area input {
+        .chat-input input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #333;
             border-radius: 8px 0 0 8px;
             font-size: 16px;
             background: #333; /* Dark input background */
             color: white; /* White text */
         }
-        .input-area button {
-            padding: 10px 20px;
-            background: linear-gradient(90deg, #00ff99, #00ccff);
+        .chat-input button {
+            padding: 12px 20px;
+            background-color: #00ff99; /* Neon green button */
             color: black;
             border: none;
             border-radius: 0 8px 8px 0;
             font-size: 16px;
             cursor: pointer;
         }
-        .input-area button:hover {
-            filter: brightness(0.9);
+        .chat-input button:hover {
+            background-color: #00ccff; /* Cyan on hover */
         }
-
-        /* Footer */
         footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
             font-size: 14px;
-            color: #aaa;
+            color: #aaa; /* Light gray text */
         }
         footer a {
-            color: #00ff99;
+            color: #00ff99; /* Neon green links */
             text-decoration: none;
         }
         footer a:hover {
             text-decoration: underline;
         }
-
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 20px;
-            }
-            .chat-container {
-                height: 80vh;
-            }
-            .input-area input {
-                font-size: 14px;
-            }
-            .input-area button {
-                padding: 8px 16px;
-                font-size: 14px;
-            }
+        /* Slide Navigation Styles */
+        .slide-nav {
+            position: fixed;
+            top: 20px;
+            right: -200px; /* Hidden by default */
+            width: 200px;
+            height: 100vh;
+            background: #1e1e1e;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.3);
+            transition: right 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .slide-nav.open {
+            right: 0; /* Show the navigation */
+        }
+        .slide-nav ul {
+            list-style: none;
+            padding: 20px;
+        }
+        .slide-nav ul li {
+            margin-bottom: 15px;
+        }
+        .slide-nav ul li a {
+            color: #00ff99;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .slide-nav ul li a:hover {
+            text-decoration: underline;
+        }
+        .nav-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff99;
+            color: black;
+            padding: 8px 12px; /* Smaller button */
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px; /* Smaller font size */
+            z-index: 1001;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
         <h1>XLwenic</h1>
         <p>Your Advanced AI Assistant</p>
     </header>
-
-    <!-- Chat Interface -->
-    <div class="chat-container">
-        <div class="chat-box" id="chatBox">
-            <!-- Messages will appear here -->
-        </div>
-        <div class="input-area">
+    <div class="container">
+        <div class="chat-container" id="chatBox"></div>
+        <div class="chat-input">
             <input type="text" id="userInput" placeholder="Ask XLwenic anything...">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
-
-    <!-- Footer -->
     <footer>
         Made by <a href="about.html">Xnic Corp</a> | Powered by XLwenic
     </footer>
+
+    <!-- Slide Navigation -->
+    <button class="nav-toggle" onclick="toggleNav()">Menu</button>
+    <div class="slide-nav" id="slideNav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </div>
 
     <script>
         // OpenRouter API Key
@@ -190,13 +210,21 @@
             document.getElementById('chatBox').appendChild(botMessageDiv);
 
             try {
+                // Check if the input contains an image URL
+                const isImageUrl = isValidUrl(message);
+
                 // Prepare the API request payload
                 const requestBody = {
                     model: "google/gemini-2.0-pro-exp-02-05:free",
                     messages: [
                         {
                             role: "user",
-                            content: [{ type: "text", text: message }]
+                            content: isImageUrl
+                                ? [
+                                      { type: "text", text: "What is in this image?" },
+                                      { type: "image_url", image_url: { url: message } }
+                                  ]
+                                : [{ type: "text", text: message }]
                         }
                     ],
                     stream: true // Enable streaming
@@ -206,7 +234,7 @@
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`, // Correctly added API key
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
                         "HTTP-Referer": "https://xlwenic.lua.ren",
                         "X-Title": "XLwenic",
                         "Content-Type": "application/json"
@@ -239,8 +267,11 @@
                                 // Append content to the full response
                                 fullResponse += content;
 
-                                // Update the bot message with the full response
-                                botMessageDiv.textContent = fullResponse;
+                                // Replace "Google" (case-insensitive) with "Xnic Corp"
+                                const filteredResponse = fullResponse.replace(/google/gi, "Xnic Corp");
+
+                                // Update the bot message with the filtered response
+                                botMessageDiv.textContent = filteredResponse;
                             } catch (error) {
                                 console.error("Error parsing JSON:", error);
                             }
@@ -260,12 +291,28 @@
             document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
         }
 
+        // Helper function to validate URLs
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                return url.protocol === "http:" || url.protocol === "https:";
+            } catch (_) {
+                return false;
+            }
+        }
+
         function addMessageToChat(message, sender) {
             const chatBox = document.getElementById('chatBox');
             const messageDiv = document.createElement('div');
             messageDiv.textContent = message;
             messageDiv.className = `message ${sender}`;
             chatBox.appendChild(messageDiv);
+        }
+
+        // Slide Navigation Toggle
+        function toggleNav() {
+            const slideNav = document.getElementById('slideNav');
+            slideNav.classList.toggle('open');
         }
     </script>
 </body>
