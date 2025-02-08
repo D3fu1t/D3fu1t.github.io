@@ -132,16 +132,12 @@
 
             gtag('event', 'user_message', { 'message': message });
 
-            let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            let response = await fetch("https://xlwenic.albaradijoy.workers.dev", {  // Use Cloudflare Worker URL
                 method: "POST",
                 headers: {
-                    "Authorization": "Bearer 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",
-                    "HTTP-Referer": "https://xlwenic.lua.ren",
-                    "X-Title": "Xlwenic AI Chat",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
                     "messages": [{ "role": "user", "content": message }]
                 })
             });
@@ -149,12 +145,9 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Replace specific responses
+            // Custom response replacement
             if (botReply.includes("I am a large language model, trained by Google.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.Current Dataset Trained By Google.The Only One Founder of Xnic Corp is Al Baradi Joy.In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
-            }
-            if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.Current Dataset Trained By Google.The Only One Founder of Xnic Corp is Al Baradi Joy.In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
+                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.";
             }
 
             addMessage(botReply, "bot", true);
