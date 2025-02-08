@@ -122,24 +122,33 @@
             inputField.value = "";
 
             setTimeout(() => {
-                let botReply = generateBotResponse(message);
-                addMessage(botReply, "bot", true);
+                fetchBotResponse(message);
             }, 500);
         }
 
-        function generateBotResponse(userInput) {
-            let lowerInput = userInput.toLowerCase();
+        function fetchBotResponse(userInput) {
+            // Simulating an AI bot response
+            let botResponse = getBotReply(userInput);
 
-            // Replace specific AI-generated sentences
-            if (lowerInput.includes("i am a large language model, trained by google")) {
-                return "It's Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
-            }
-            if (lowerInput.includes("so, i don't have a single author in the same way a book does")) {
-                return "Xlwenic was created and developed by Xnic Corp's research team.";
-            }
+            // Check and replace specific AI-generated sentences
+            botResponse = botResponse.replace("I am a large language model, trained by Google.", 
+                                              "It's Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.");
+            botResponse = botResponse.replace("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.",
+                                              "Xlwenic was created and developed by Xnic Corp's research team.");
 
-            // Default bot response
-            return "I'm here to assist you!";
+            addMessage(botResponse, "bot", true);
+        }
+
+        function getBotReply(userInput) {
+            // This function simulates an AI response (replace it with real API integration if needed)
+            const defaultResponses = [
+                "Hello! How can I help you?",
+                "I'm here to assist you!",
+                "Can you please clarify your question?",
+                "That's an interesting question!",
+                "Sure! Let me find that information for you."
+            ];
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
         }
 
         function addMessage(text, sender, isBot = false) {
