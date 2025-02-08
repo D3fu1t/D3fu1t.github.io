@@ -32,9 +32,15 @@
             justify-content: space-between;
             font-size: 18px;
         }
-        .menu-btn {
-            font-size: 20px;
-            cursor: pointer;
+        .nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .nav a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
         }
         .chat-container {
             flex: 1;
@@ -108,8 +114,10 @@
 </head>
 <body>
     <div class="header">
-        <span>Xlwenic</span>
-        <span class="menu-btn">☰</span>
+        <div class="nav">
+            <span>Xlwenic</span>
+            <a href="https://xlwenic.lua.ren/about.html">About</a>
+        </div>
     </div>
 
     <div class="chat-container" id="chat-container"></div>
