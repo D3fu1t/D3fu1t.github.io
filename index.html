@@ -149,11 +149,12 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Convert response to lowercase for better matching
-            let lowerCaseReply = botReply.toLowerCase();
-
-            if (lowerCaseReply.includes("i am a large language model") && lowerCaseReply.includes("google")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
+            // Replace specific responses
+            if (botReply.includes("I am a large language model, trained by Google.")) {
+                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.Current Dataset Trained By Google.The Only One Founder of Xnic Corp is Al Baradi Joy.In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
+            }
+            if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.")) {
+                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.Current Dataset Trained By Google.The Only One Founder of Xnic Corp is Al Baradi Joy.In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
             }
 
             addMessage(botReply, "bot", true);
