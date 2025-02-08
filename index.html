@@ -109,7 +109,7 @@
 <body>
     <div class="header">
         <span>Xlwenic</span>
-        <span class="menu-btn" onclick="location.href='https://xlwenic.lua.ren/about.html'">☰</span>
+        <span class="menu-btn" onclick="window.location.href='https://xlwenic.lua.ren/about.html'">☰</span>
     </div>
 
     <div class="chat-container" id="chat-container"></div>
@@ -132,55 +132,60 @@
 
             gtag('event', 'user_message', { 'message': message });
 
-            let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer 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",
-                    "HTTP-Referer": "https://xlwenic.lua.ren",
-                    "X-Title": "Xlwenic AI Chat",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-                    "messages": [{ "role": "user", "content": message }]
-                })
-            });
+            let chatContainer = document.getElementById("chat-container");
+            let botMessageDiv = document.createElement("div");
+            botMessageDiv.classList.add("message", "bot");
+            chatContainer.appendChild(botMessageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            let data = await response.json();
-            let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
+            try {
+                let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer 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",
+                        "HTTP-Referer": "https://xlwenic.lua.ren",
+                        "X-Title": "Xlwenic AI Chat",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
+                        "messages": [{ "role": "user", "content": message }]
+                    })
+                });
 
-            // Replace specific responses
-            if (botReply.includes("I am a large language model, trained by Google.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
+                let data = await response.json();
+                let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
+
+                // 🔹 Custom Response Replacement
+                if (botReply.includes("I am a large language model, trained by Google.")) {
+                    botReply = "It’s Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
+                }
+                if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.")) {
+                    botReply = "It’s Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
+                }
+
+                gtag('event', 'bot_response', { 'response': botReply });
+
+                simulateTyping(botMessageDiv, botReply);
+
+            } catch (error) {
+                botMessageDiv.textContent = "Error: Failed to fetch AI response.";
             }
-            if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
-            }
-
-            addMessage(botReply, "bot", true);
-
-            gtag('event', 'bot_response', { 'response': botReply });
         }
 
-        function addMessage(text, sender, isBot = false) {
-            let chatContainer = document.getElementById("chat-container");
-            let messageDiv = document.createElement("div");
-            messageDiv.textContent = text;
-            messageDiv.classList.add("message", sender);
+        function simulateTyping(element, text, speed = 50) {
+            element.textContent = "";
+            let index = 0;
 
-            if (isBot) {
-                let copyButton = document.createElement("button");
-                copyButton.textContent = "📋";
-                copyButton.classList.add("copy-btn");
-                copyButton.onclick = function () {
-                    navigator.clipboard.writeText(text);
-                    alert("Copied to clipboard!");
-                };
-                messageDiv.appendChild(copyButton);
+            function typeChar() {
+                if (index < text.length) {
+                    element.textContent += text[index];
+                    index++;
+                    setTimeout(typeChar, speed);
+                }
             }
 
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            typeChar();
         }
     </script>
 </body>
