@@ -35,7 +35,6 @@
         .menu-btn {
             font-size: 20px;
             cursor: pointer;
-            margin-left: 10px;
         }
         .side-nav {
             height: 90%;
@@ -63,21 +62,42 @@
             flex: 1;
             overflow-y: auto;
             padding: 15px;
+            display: flex;
+            flex-direction: column;
         }
         .message {
             padding: 10px;
             margin: 5px;
             border-radius: 8px;
-            max-width: 80%;
+            max-width: 60%;
+            display: flex;
+            align-items: center;
+            position: relative;
         }
         .user {
-            background-color: #007bff;
+            background-color: #0b93f6;
             align-self: flex-end;
             text-align: right;
+            color: white;
         }
         .bot {
-            background-color: #333;
+            background-color: #3a3a3a;
             align-self: flex-start;
+            text-align: left;
+            color: white;
+        }
+        .copy-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+            padding: 5px;
+            opacity: 0.6;
+        }
+        .copy-btn:hover {
+            opacity: 1;
         }
         .input-container {
             display: flex;
@@ -114,13 +134,13 @@
 <body>
     <div class="header">
         <span>Xlwenic</span>
-        <span class="menu-btn" onclick="openNav()">☰ Menu</span>
+        <span class="menu-btn" onclick="openNav()">☰</span>
     </div>
 
     <!-- Side Navigation Menu -->
     <div id="sideNav" class="side-nav">
         <a href="javascript:void(0)" onclick="closeNav()">✖ Close</a>
-        <a href="Xlwenic.lua.ren/about.html">About</a>
+        <a href="https://xlwenic.lua.ren/about.html">About</a>
     </div>
 
     <div class="chat-container" id="chat-container"></div>
@@ -176,16 +196,28 @@
                 botReply = "It’s Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.";
             }
 
-            addMessage(botReply, "bot");
+            addMessage(botReply, "bot", true);
 
             gtag('event', 'bot_response', { 'response': botReply });
         }
 
-        function addMessage(text, sender) {
+        function addMessage(text, sender, isBot = false) {
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.textContent = text;
             messageDiv.classList.add("message", sender);
+
+            if (isBot) {
+                let copyButton = document.createElement("button");
+                copyButton.textContent = "📋";
+                copyButton.classList.add("copy-btn");
+                copyButton.onclick = function () {
+                    navigator.clipboard.writeText(text);
+                    alert("Copied to clipboard!");
+                };
+                messageDiv.appendChild(copyButton);
+            }
+
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
