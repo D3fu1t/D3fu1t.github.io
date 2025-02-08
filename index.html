@@ -33,7 +33,7 @@
             padding: 10px;
             display: flex;
             flex-direction: column;
-            max-height: 60vh; /* Adjusted to make footer visible */
+            max-height: 60vh;
         }
         .message {
             padding: 8px 12px;
@@ -61,7 +61,7 @@
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 10px; /* Made smaller */
+            font-size: 10px;
             margin-left: 5px;
             opacity: 0.6;
         }
@@ -113,7 +113,11 @@
     <div class="footer">Made By Xnic Corp | Powered By Xlwenic</div>
 
     <script>
-        function sendMessage() {
+        const OPENROUTER_API_KEY = "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";
+        const YOUR_SITE_URL = "https://xlwenic.lua.ren"; // Your website URL
+        const YOUR_SITE_NAME = "Xlwenic"; // Your website name
+
+        async function sendMessage() {
             let inputField = document.getElementById("user-input");
             let message = inputField.value.trim();
             if (message === "") return;
@@ -121,34 +125,59 @@
             addMessage(message, "user");
             inputField.value = "";
 
-            setTimeout(() => {
-                fetchBotResponse(message);
-            }, 500);
+            try {
+                let botReply = await fetchAIResponse(message);
+                botReply = replaceSpecificResponses(botReply);
+                addMessage(botReply, "bot", true);
+            } catch (error) {
+                addMessage("Error fetching AI response!", "bot");
+            }
         }
 
-        function fetchBotResponse(userInput) {
-            // Simulating an AI bot response
-            let botResponse = getBotReply(userInput);
+        async function fetchAIResponse(userInput) {
+            let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                    "HTTP-Referer": YOUR_SITE_URL,
+                    "X-Title": YOUR_SITE_NAME,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": userInput
+                                }
+                            ]
+                        }
+                    ]
+                })
+            });
 
-            // Check and replace specific AI-generated sentences
-            botResponse = botResponse.replace("I am a large language model, trained by Google.", 
-                                              "It's Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.");
-            botResponse = botResponse.replace("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.",
-                                              "Xlwenic was created and developed by Xnic Corp's research team.");
-
-            addMessage(botResponse, "bot", true);
+            let data = await response.json();
+            return data.choices?.[0]?.message?.content?.[0]?.text || "No response from AI.";
         }
 
-        function getBotReply(userInput) {
-            // This function simulates an AI response (replace it with real API integration if needed)
-            const defaultResponses = [
-                "Hello! How can I help you?",
-                "I'm here to assist you!",
-                "Can you please clarify your question?",
-                "That's an interesting question!",
-                "Sure! Let me find that information for you."
-            ];
-            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        function replaceSpecificResponses(responseText) {
+            let replacements = {
+                "I'm a large language model, trained by Google.": 
+                    "It's Xlwenic and Made By Xnic Corp. The Founder of Xnic Corp is Al Baradi Joy.",
+                "I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.":
+                    "Xlwenic was created and developed by Xnic Corp's research team."
+            };
+
+            for (let key in replacements) {
+                if (responseText.includes(key)) {
+                    responseText = responseText.replace(key, replacements[key]);
+                }
+            }
+
+            return responseText;
         }
 
         function addMessage(text, sender, isBot = false) {
