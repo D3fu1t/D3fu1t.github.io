@@ -11,7 +11,7 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){ dataLayer.push(arguments); }
         gtag('js', new Date());
-        gtag('config', 'G-RRVD3RER91'); // Your GA4 Measurement ID
+        gtag('config', 'G-RRVD3RER91');
     </script>
 
     <style>
@@ -133,44 +133,19 @@
             gtag('event', 'user_message', { 'message': message });
 
             try {
-                let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                let response = await fetch("https://xlwenic.albaradijoy.workers.dev", { // Use Worker URL
                     method: "POST",
-                    headers: {
-                        "Authorization": "Bearer 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",
-                        "HTTP-Referer": "https://xlwenic.lua.ren",
-                        "X-Title": "Xlwenic AI Chat",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-                        "messages": [{ "role": "user", "content": message }]
-                    })
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ "messages": [{ "role": "user", "content": message }] })
                 });
 
                 let data = await response.json();
                 let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-                // Custom response replacements
-                const replacementMessage = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp is using Google's dataset for Xlwenic. Current dataset trained by Google. The only founder of Xnic Corp is Al Baradi Joy. In the future, Xnic Corp will come with its own dataset after completing training and experiments.";
-
-                const phrasesToReplace = [
-                    "I am a large language model, trained by Google.",
-                    "I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers."
-                ];
-
-                phrasesToReplace.forEach(phrase => {
-                    if (botReply.includes(phrase)) {
-                        botReply = replacementMessage;
-                    }
-                });
-
                 addMessage(botReply, "bot", true);
-
                 gtag('event', 'bot_response', { 'response': botReply });
-
             } catch (error) {
-                console.error("Error fetching AI response:", error);
-                addMessage("Error: Unable to reach AI service.", "bot", true);
+                addMessage("Error: Unable to connect to the AI server.", "bot", true);
             }
         }
 
