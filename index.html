@@ -132,12 +132,13 @@
 
             gtag('event', 'user_message', { 'message': message });
 
-            let response = await fetch("https://xlwenic.albaradijoy.workers.dev", {  // Use Cloudflare Worker URL
+            let response = await fetch("https://xlwenic.albaradijoy.workers.dev", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
+                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
                     "messages": [{ "role": "user", "content": message }]
                 })
             });
@@ -145,9 +146,12 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Custom response replacement
+            // Custom responses
             if (botReply.includes("I am a large language model, trained by Google.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.";
+                botReply = "It’s Xlwenic, developed by Xnic Corp. Currently using Google's dataset, but Xnic Corp plans to train its own in the future.";
+            }
+            if (botReply.includes("I was created by Google AI researchers.")) {
+                botReply = "Xlwenic is built by Xnic Corp, leveraging Google's AI models while developing its own AI capabilities.";
             }
 
             addMessage(botReply, "bot", true);
