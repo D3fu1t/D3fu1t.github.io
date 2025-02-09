@@ -14,70 +14,63 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #050505; /* Dark Cyberpunk Background */
+            background-color: #000;
             color: #ffffff;
-            line-height: 1.8;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 90vh;
             overflow: hidden;
+            text-align: center;
         }
 
         /* Cyberpunk Header */
         header {
             width: 100%;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 30px;
+            padding: 15px 0;
+            font-size: 28px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #00ffcc; /* Neon Cyan Text */
-            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #00ffcc;
-            background: linear-gradient(270deg, #ff00ff, #00ffff);
-            background-size: 400% 400%;
-            animation: cyberpunkGlow 6s infinite alternate, glitchText 0.15s infinite;
             position: absolute;
             top: 0;
+            background: linear-gradient(270deg, #0ff, #f0f);
+            background-size: 200% 200%;
+            animation: neonMove 6s infinite alternate;
+            box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.5);
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
         }
 
-        /* Cyberpunk Gradient Animation */
-        @keyframes cyberpunkGlow {
+        /* Smooth Gradient Animation */
+        @keyframes neonMove {
             0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
-        /* Neon Glitch Effect on Text */
-        @keyframes glitchText {
-            0% { text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; }
-            50% { text-shadow: 2px 2px 10px #ff00ff, -2px -2px 20px #00ffff; }
-            100% { text-shadow: -2px -2px 10px #00ffcc, 2px 2px 20px #ff00ff; }
-        }
-
-        /* Container */
+        /* Content Box */
         .container {
+            width: 80%;
             max-width: 850px;
-            width: 90%;
             padding: 20px;
-            background: rgba(30, 30, 30, 0.95);
-            border-radius: 14px;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 10px;
             box-shadow: 0px 0px 20px #ff00ff;
-            text-align: center;
+            position: relative;
+            z-index: 2;
         }
 
-        /* Cyberpunk Headings */
         h2 {
             color: #00ffcc;
-            font-size: 26px;
+            font-size: 24px;
             text-shadow: 0px 0px 10px #00ffcc;
+            margin-bottom: 10px;
         }
 
         p {
-            font-size: 17px;
-            text-align: justify;
+            font-size: 16px;
+            margin: 5px 0;
         }
 
         /* Footer */
@@ -85,9 +78,8 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            text-align: center;
             padding: 10px;
-            background: rgba(30, 30, 30, 0.9);
+            background: rgba(20, 20, 20, 0.9);
             color: #aaa;
             box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.3);
         }
@@ -103,16 +95,17 @@
             text-shadow: 0px 0px 8px #ff00ff;
         }
 
-        /* Responsive */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
+                width: 90%;
                 padding: 15px;
             }
             h2 {
-                font-size: 22px;
+                font-size: 20px;
             }
             p {
-                font-size: 15px;
+                font-size: 14px;
             }
         }
     </style>
@@ -124,9 +117,9 @@
 
     <div class="container">
         <h2>Welcome to Xnic Corp</h2>
-        <p>Xnic Corp is a leading innovator in artificial intelligence and advanced technology solutions. Our mission is to empower individuals and businesses with cutting-edge tools that simplify complex tasks and enhance productivity.</p>
-        <p>Our flagship product, <strong style="color: #ff00ff;">XLwenic</strong>, is an AI assistant designed to provide intelligent responses, answer questions, and assist users in real-time. Built with state-of-the-art technology, XLwenic is your go-to solution for seamless interactions and reliable support.</p>
-        <p>At Xnic Corp, we are committed to pushing the boundaries of what's possible with AI. Whether it's natural language processing, machine learning, or automation, our team of experts is dedicated to delivering innovative solutions that drive progress.</p>
+        <p>Xnic Corp is a leader in artificial intelligence and advanced technology.</p>
+        <p>Our flagship AI assistant, <strong style="color: #ff00ff;">XLwenic</strong>, provides real-time intelligent responses.</p>
+        <p>We push the boundaries of AI with cutting-edge solutions in machine learning and automation.</p>
     </div>
 
     <footer>
