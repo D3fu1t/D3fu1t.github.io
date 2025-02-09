@@ -38,6 +38,7 @@
             justify-content: space-between;
             font-size: 18px;
             height: 50px;
+            flex-shrink: 0;
         }
         .menu-btn {
             font-size: 20px;
@@ -49,6 +50,7 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            min-height: 0; /* Ensures proper scrolling */
         }
         .message {
             padding: 8px 12px;
@@ -82,24 +84,27 @@
         }
         .input-container {
             display: flex;
-            padding: 8px;
+            padding: 5px;
             background-color: #1e1e1e;
-            height: 50px;
+            height: 40px;
+            flex-shrink: 0;
         }
         input {
             flex: 1;
-            padding: 6px;
+            padding: 5px;
             border: none;
             border-radius: 5px;
             font-size: 14px;
+            height: 30px;
         }
         button {
-            padding: 6px 10px;
+            padding: 5px 10px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            height: 30px;
         }
         .footer {
             text-align: center;
@@ -108,6 +113,7 @@
             color: white;
             font-size: 12px;
             height: 30px;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -194,7 +200,7 @@
                 if (index < text.length) {
                     messageDiv.textContent += text[index];
                     index++;
-                    setTimeout(typeLetter, 20); // Speed of typing effect
+                    setTimeout(typeLetter, 20);
                 }
             }
             typeLetter();
