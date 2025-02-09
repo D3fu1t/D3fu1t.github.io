@@ -15,14 +15,19 @@
     </script>
 
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            overflow: hidden;
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: white;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            margin: 0;
         }
         .header {
             background-color: #1e1e1e;
@@ -31,6 +36,7 @@
             align-items: center;
             justify-content: space-between;
             font-size: 18px;
+            height: 50px;
         }
         .menu-btn {
             font-size: 20px;
@@ -38,11 +44,10 @@
         }
         .chat-container {
             flex: 1;
-            overflow-y: auto;
             padding: 10px;
             display: flex;
             flex-direction: column;
-            max-height: 75vh;
+            justify-content: flex-end; /* Ensures messages stick to the bottom */
         }
         .message {
             padding: 8px 12px;
@@ -51,7 +56,6 @@
             max-width: 55%;
             font-size: 14px;
             line-height: 1.0;
-            position: relative;
         }
         .user {
             background-color: #0b93f6;
@@ -79,8 +83,9 @@
         }
         .input-container {
             display: flex;
-            padding: 8px;
+            padding: 10px;
             background-color: #1e1e1e;
+            height: 50px;
         }
         input {
             flex: 1;
@@ -88,6 +93,7 @@
             border: none;
             border-radius: 5px;
             margin-right: 5px;
+            font-size: 16px;
         }
         button {
             padding: 8px 12px;
@@ -103,6 +109,7 @@
             background-color: #1e1e1e;
             color: white;
             font-size: 12px;
+            height: 30px;
         }
     </style>
 </head>
@@ -151,10 +158,10 @@
 
             // Replace specific responses
             if (botReply.includes("I am a large language model, trained by Google.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.Current Dataset Trained By Google.The Only One Founder of Xnic Corp is Al Baradi Joy.In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
+                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp is using Google's dataset for Xlwenic. In the future, Xnic Corp will develop its own dataset after completing training and experiments.";
             }
-            if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does. I was created and developed by a team of Google AI researchers and engineers.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp.Xnic Corp using Google Dataset for Xlwenic.Current Dataset Trained By Google.The Only One Founder of Xnic Corp is Al Baradi Joy.In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
+            if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does.")) {
+                botReply = "It’s Xlwenic and Made By Xnic Corp. The only founder of Xnic Corp is Al Baradi Joy. Future datasets will be developed internally.";
             }
 
             addMessage(botReply, "bot", true);
@@ -180,7 +187,6 @@
             }
 
             chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
