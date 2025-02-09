@@ -5,57 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Xnic Corp</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212; /* Dark background */
-            color: #ffffff; /* White text */
-            line-height: 1.6;
+        /* Global Styles */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            line-height: 1.8;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
+        }
+
+        /* Header */
         header {
-            background: linear-gradient(135deg, #000000, #2c3e50); /* Black gradient */
+            background: linear-gradient(135deg, #000000, #2c3e50);
             color: white;
-            padding: 20px 0;
             text-align: center;
-            font-size: 28px;
+            padding: 25px 0;
+            font-size: 32px;
             font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
         }
+
+        /* Container */
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #1e1e1e; /* Slightly lighter black */
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            max-width: 850px;
+            width: 90%;
+            margin: auto;
+            padding: 25px;
+            background: #1e1e1e;
+            border-radius: 14px;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
+
+        /* Neon Glow Effect on Hover */
+        .container:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 0px 20px #00ff99;
+        }
+
+        /* Neon Glow Effect for Headings */
         h2 {
-            color: #00ff99; /* Neon green headings */
-            margin-bottom: 15px;
+            color: #00ff99;
+            margin-bottom: 18px;
+            text-align: center;
+            font-size: 26px;
+            text-shadow: 0px 0px 10px #00ff99;
         }
+
         p {
-            font-size: 16px;
-            margin-bottom: 15px;
+            font-size: 17px;
+            margin-bottom: 18px;
+            text-align: justify;
         }
+
+        strong {
+            color: #00ff99;
+        }
+
+        /* Footer */
         footer {
             text-align: center;
-            margin-top: 30px;
-            font-size: 14px;
-            color: #aaa; /* Light gray text */
+            margin-top: auto;
+            font-size: 15px;
+            padding: 15px;
+            background: #1e1e1e;
+            color: #aaa;
+            box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.3);
         }
+
+        /* Neon Glow for Links */
         footer a {
-            color: #00ff99; /* Neon green links */
+            color: #00ff99;
             text-decoration: none;
+            font-weight: bold;
+            transition: text-shadow 0.3s;
         }
+
         footer a:hover {
-            text-decoration: underline;
+            text-shadow: 0px 0px 8px #00ff99;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                font-size: 28px;
+            }
+            .container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 24px;
+            }
+            p {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Xnic Corp</h1>
+        Xnic Corp
     </header>
+
     <div class="container">
         <h2>Welcome to Xnic Corp</h2>
         <p>Xnic Corp is a leading innovator in artificial intelligence and advanced technology solutions. Our mission is to empower individuals and businesses with cutting-edge tools that simplify complex tasks and enhance productivity.</p>
@@ -63,8 +124,9 @@
         <p>At Xnic Corp, we are committed to pushing the boundaries of what's possible with AI. Whether it's natural language processing, machine learning, or automation, our team of experts is dedicated to delivering innovative solutions that drive progress.</p>
         <p>Join us on this journey as we redefine the future of technology.</p>
     </div>
+
     <footer>
-        Made by Xnic Corp | Powered by XLwenic
+        Made by Xnic Corp | Powered by <a href="#">XLwenic</a>
     </footer>
 </body>
 </html>
