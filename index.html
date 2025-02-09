@@ -44,6 +44,7 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            height: calc(100vh - 100px);
         }
         .message {
             padding: 12px;
@@ -74,6 +75,23 @@
             width: 100%;
             color: #e3e3e3;
         }
+        .copy-btn {
+            font-size: 12px;
+            padding: 3px 6px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 8px;
+            display: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .bot:hover .copy-btn {
+            display: inline-block;
+        }
+        
+        /* ChatGPT-like Input Box */
         .input-container {
             display: flex;
             align-items: center;
@@ -93,25 +111,14 @@
             outline: none;
             margin-right: 10px;
         }
-        .send-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #0078d4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        button {
+            background: none;
             border: none;
             cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
         }
-        .send-btn:hover {
-            background-color: #005ea2;
-        }
-        .send-btn svg {
-            width: 22px;
-            height: 22px;
-            fill: white;
+        button img {
+            width: 24px;
+            height: 24px;
         }
     </style>
 </head>
@@ -122,37 +129,19 @@
 
     <div class="input-container">
         <input type="text" id="user-input" placeholder="Message..." />
-        <button id="send-btn" class="send-btn" onclick="sendMessage()">
-            <!-- Send Icon -->
-            <svg id="send-icon" viewBox="0 0 24 24">
-                <path d="M2 21l21-9L2 3v7l15 2-15 2z"></path>
-            </svg>
-            <!-- Stop Icon (Hidden Initially) -->
-            <svg id="stop-icon" viewBox="0 0 24 24" style="display: none;">
-                <path d="M6 6h12v12H6z"></path>
-            </svg>
+        <button onclick="sendMessage()">
+            <img src="https://cdn-icons-png.flaticon.com/512/60/60525.png" alt="Send">
         </button>
     </div>
 
     <script>
-        let stopTyping = false;
-
         async function sendMessage() {
             let inputField = document.getElementById("user-input");
-            let sendBtn = document.getElementById("send-btn");
-            let sendIcon = document.getElementById("send-icon");
-            let stopIcon = document.getElementById("stop-icon");
-
             let message = inputField.value.trim();
             if (message === "") return;
 
             addMessage(message, "user");
             inputField.value = "";
-
-            // Switch to stop icon while bot is typing
-            sendIcon.style.display = "none";
-            stopIcon.style.display = "block";
-            sendBtn.onclick = () => stopTyping = true;
 
             gtag('event', 'user_message', { 'message': message });
 
@@ -179,14 +168,13 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
+            if (botReply.includes("I am a large language model, trained by Google.")) {
+                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp using Google Dataset for Xlwenic. Current Dataset Trained By Google. The Only One Founder of Xnic Corp is Al Baradi Joy. In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
+            }
+
             setTimeout(() => {
                 typingIndicator.remove();
                 typeMessage(botReply, "bot");
-
-                // Switch back to send icon
-                sendIcon.style.display = "block";
-                stopIcon.style.display = "none";
-                sendBtn.onclick = sendMessage;
             }, 50);
 
             gtag('event', 'bot_response', { 'response': botReply });
@@ -205,23 +193,31 @@
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.classList.add("message", sender);
+            
+            let copyButton = document.createElement("button");
+            copyButton.textContent = "Copy";
+            copyButton.classList.add("copy-btn");
+            copyButton.onclick = () => copyToClipboard(text);
+            
+            messageDiv.appendChild(copyButton);
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
 
             let index = 0;
             function typeLetter() {
-                if (stopTyping) {
-                    messageDiv.textContent = text; 
-                    stopTyping = false;
-                    return;
-                }
                 if (index < text.length) {
-                    messageDiv.textContent += text[index];
+                    messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
                     index++;
-                    setTimeout(typeLetter, 10); // Faster animation speed
+                    setTimeout(typeLetter, 0.05);  // **20× Faster**
                 }
             }
             typeLetter();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard!");
+            });
         }
 
         function scrollToBottom() {
