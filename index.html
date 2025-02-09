@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xlwenic</title>
-    
+
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RRVD3RER91"></script>
     <script>
@@ -21,7 +21,8 @@
             box-sizing: border-box;
         }
         html, body {
-            height: 100%;
+            width: 100%;
+            height: 100vh;
             overflow: hidden;
             font-family: Arial, sans-serif;
             background-color: #121212;
@@ -36,7 +37,7 @@
             align-items: center;
             justify-content: space-between;
             font-size: 18px;
-            height: 50px;
+            height: 10vh;
         }
         .menu-btn {
             font-size: 20px;
@@ -47,15 +48,26 @@
             padding: 10px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* Ensures messages stick to the bottom */
+            overflow-y: auto;
+            max-height: 75vh;
         }
         .message {
             padding: 8px 12px;
-            margin: 5px;
+            margin: 5px 0;
             border-radius: 8px;
             max-width: 55%;
             font-size: 14px;
-            line-height: 1.0;
+            line-height: 1.2;
+            opacity: 0;
+            animation: fadeIn 0.3s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing {
+            font-style: italic;
+            opacity: 0.6;
         }
         .user {
             background-color: #0b93f6;
@@ -69,23 +81,11 @@
             text-align: left;
             color: white;
         }
-        .copy-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 5px;
-            opacity: 0.6;
-        }
-        .copy-btn:hover {
-            opacity: 1;
-        }
         .input-container {
             display: flex;
             padding: 10px;
             background-color: #1e1e1e;
-            height: 50px;
+            height: 10vh;
         }
         input {
             flex: 1;
@@ -109,7 +109,7 @@
             background-color: #1e1e1e;
             color: white;
             font-size: 12px;
-            height: 30px;
+            height: 5vh;
         }
     </style>
 </head>
@@ -139,6 +139,13 @@
 
             gtag('event', 'user_message', { 'message': message });
 
+            // Show typing indicator
+            let typingIndicator = document.createElement("div");
+            typingIndicator.textContent = "Xlwenic is typing...";
+            typingIndicator.classList.add("message", "bot", "typing");
+            document.getElementById("chat-container").appendChild(typingIndicator);
+            scrollToBottom();
+
             let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -156,37 +163,48 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Replace specific responses
             if (botReply.includes("I am a large language model, trained by Google.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp is using Google's dataset for Xlwenic. In the future, Xnic Corp will develop its own dataset after completing training and experiments.";
-            }
-            if (botReply.includes("I am a large language model, trained by Google. So, I don't have a single author in the same way a book does.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. The only founder of Xnic Corp is Al Baradi Joy. Future datasets will be developed internally.";
+                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp using Google Dataset for Xlwenic. Current Dataset Trained By Google. The Only One Founder of Xnic Corp is Al Baradi Joy. In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
             }
 
-            addMessage(botReply, "bot", true);
+            setTimeout(() => {
+                typingIndicator.remove();
+                typeMessage(botReply, "bot");
+            }, 1000);
 
             gtag('event', 'bot_response', { 'response': botReply });
         }
 
-        function addMessage(text, sender, isBot = false) {
+        function addMessage(text, sender) {
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.textContent = text;
             messageDiv.classList.add("message", sender);
-
-            if (isBot) {
-                let copyButton = document.createElement("button");
-                copyButton.textContent = "📋";
-                copyButton.classList.add("copy-btn");
-                copyButton.onclick = function () {
-                    navigator.clipboard.writeText(text);
-                    alert("Copied to clipboard!");
-                };
-                messageDiv.appendChild(copyButton);
-            }
-
             chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function typeMessage(text, sender) {
+            let chatContainer = document.getElementById("chat-container");
+            let messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+
+            let index = 0;
+            function typeLetter() {
+                if (index < text.length) {
+                    messageDiv.textContent += text[index];
+                    index++;
+                    setTimeout(typeLetter, 20); // Speed of typing effect
+                }
+            }
+            typeLetter();
+        }
+
+        function scrollToBottom() {
+            let chatContainer = document.getElementById("chat-container");
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     </script>
 </body>
