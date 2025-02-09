@@ -32,52 +32,63 @@
         }
         .header {
             background-color: #1e1e1e;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 12px;
+            text-align: center;
             font-size: 18px;
             height: 50px;
             flex-shrink: 0;
         }
         .chat-container {
             flex: 1;
-            padding: 10px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            min-height: 0;
+            height: calc(100vh - 100px);
         }
         .message {
             padding: 12px;
             margin: 8px 0;
             border-radius: 10px;
-            max-width: 75%;
-            font-size: 15px;
-            line-height: 1.4;
+            font-size: 16px;
+            line-height: 1.5;
             opacity: 0;
-            animation: fadeIn 0.15s ease-in forwards;
+            animation: fadeIn 0.1s ease-in forwards;
             word-wrap: break-word;
+            max-width: 100%;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(3px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .typing {
-            font-style: italic;
-            opacity: 0.6;
-        }
         .user {
-            background-color: #0078d4;
+            background-color: #2a2a2a;
             align-self: flex-end;
-            text-align: left;
-            color: white;
+            color: #e3e3e3;
         }
         .bot {
             background-color: #2b2b2b;
             align-self: flex-start;
-            text-align: left;
+            width: 100%;
             color: #e3e3e3;
+        }
+        .copy-btn {
+            font-size: 12px;
+            padding: 3px 6px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 8px;
+            display: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .bot:hover .copy-btn {
+            display: inline-block;
         }
         .input-container {
             display: flex;
@@ -103,15 +114,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #1e1e1e;
-            color: white;
-            font-size: 12px;
-            height: 40px;
-            flex-shrink: 0;
-        }
     </style>
 </head>
 <body>
@@ -124,8 +126,6 @@
         <button onclick="sendMessage()">Send</button>
     </div>
 
-    <div class="footer">Made By Xnic Corp | Powered By Xlwenic</div>
-
     <script>
         async function sendMessage() {
             let inputField = document.getElementById("user-input");
@@ -137,7 +137,6 @@
 
             gtag('event', 'user_message', { 'message': message });
 
-            // Show typing indicator
             let typingIndicator = document.createElement("div");
             typingIndicator.textContent = "Xlwenic is typing...";
             typingIndicator.classList.add("message", "bot", "typing");
@@ -168,7 +167,7 @@
             setTimeout(() => {
                 typingIndicator.remove();
                 typeMessage(botReply, "bot");
-            }, 100);
+            }, 50);
 
             gtag('event', 'bot_response', { 'response': botReply });
         }
@@ -176,8 +175,8 @@
         function addMessage(text, sender) {
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
-            messageDiv.textContent = text;
             messageDiv.classList.add("message", sender);
+            messageDiv.textContent = text;
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
         }
@@ -186,18 +185,31 @@
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.classList.add("message", sender);
+            
+            let copyButton = document.createElement("button");
+            copyButton.textContent = "Copy";
+            copyButton.classList.add("copy-btn");
+            copyButton.onclick = () => copyToClipboard(text);
+            
+            messageDiv.appendChild(copyButton);
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
 
             let index = 0;
             function typeLetter() {
                 if (index < text.length) {
-                    messageDiv.textContent += text[index];
+                    messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
                     index++;
-                    setTimeout(typeLetter, 2);
+                    setTimeout(typeLetter, 1);
                 }
             }
             typeLetter();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard!");
+            });
         }
 
         function scrollToBottom() {
