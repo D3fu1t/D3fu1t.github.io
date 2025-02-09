@@ -44,7 +44,7 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            height: calc(100vh - 100px);
+            height: calc(100vh - 110px);
         }
         .message {
             padding: 12px;
@@ -120,6 +120,16 @@
             width: 24px;
             height: 24px;
         }
+
+        /* Footer */
+        .footer {
+            background-color: #1e1e1e;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #bbb;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -132,6 +142,11 @@
         <button onclick="sendMessage()">
             <img src="https://cdn-icons-png.flaticon.com/512/60/60525.png" alt="Send">
         </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Made By Xnic Corp | Powered By Xlwenic
     </div>
 
     <script>
