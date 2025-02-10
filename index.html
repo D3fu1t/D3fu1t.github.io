@@ -183,8 +183,12 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            if (botReply.includes("I am a large language model, trained by Google.")) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp using Google Dataset for Xlwenic. Current Dataset Trained By Google. The Only One Founder of Xnic Corp is Al Baradi Joy. In Future Xnic Corp will Come with his Own Dataset after Complete their Training and Experiment.";
+            // Replace default AI disclaimer responses
+            if (
+                botReply.includes("I am a large language model, trained by Google.") ||
+                botReply.includes("আমি একটি বৃহৎ ভাষা মডেল, গুগল কর্তৃক প্রশিক্ষিত।")
+            ) {
+                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp is using Google’s dataset for Xlwenic. The only founder of Xnic Corp is Al Baradi Joy. In the future, Xnic Corp will have its own dataset after completing training and experiments.";
             }
 
             setTimeout(() => {
@@ -223,7 +227,7 @@
                 if (index < text.length) {
                     messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
                     index++;
-                    setTimeout(typeLetter, 0.05);  // **20× Faster**
+                    setTimeout(typeLetter, 0.05);
                 }
             }
             typeLetter();
