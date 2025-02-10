@@ -185,6 +185,20 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
+            // Replace predefined AI responses
+            let replacements = [
+                "I am a large language model, trained by Google.",
+                "As an AI, I was created by Google.",
+                "As a large language model, I don't have a physical admin in the way a person or organization does. I am developed and maintained by Google. So, you could say that Google is my \"admin\" in the sense that they oversee my development, deployment, and maintenance.",
+                "আমি গুগল কর্তৃক প্রশিক্ষিত, একটি বৃহৎ ভাষা মডেল।"
+            ];
+
+            let customReply = "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy";
+
+            if (replacements.includes(botReply)) {
+                botReply = customReply;
+            }
+
             setTimeout(() => {
                 typingIndicator.remove();
                 typeMessage(botReply, "bot");
@@ -206,32 +220,9 @@
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.classList.add("message", sender);
-            
-            let copyButton = document.createElement("button");
-            copyButton.textContent = "Copy";
-            copyButton.classList.add("copy-btn");
-            copyButton.onclick = () => copyToClipboard(copyButton, text);
-            
-            messageDiv.appendChild(copyButton);
+            messageDiv.textContent = text;
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
-
-            let index = 0;
-            function typeLetter() {
-                if (index < text.length) {
-                    messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
-                    index++;
-                    setTimeout(typeLetter, 0.05);
-                }
-            }
-            typeLetter();
-        }
-
-        function copyToClipboard(button, text) {
-            navigator.clipboard.writeText(text).then(() => {
-                button.textContent = "Copied!";
-                setTimeout(() => button.textContent = "Copy", 1500);
-            });
         }
 
         function scrollToBottom() {
