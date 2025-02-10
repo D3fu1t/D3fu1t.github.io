@@ -92,8 +92,7 @@
         .bot:hover .copy-btn {
             opacity: 1;
         }
-        
-        /* ChatGPT-like Input Box */
+
         .input-container {
             display: flex;
             align-items: center;
@@ -123,7 +122,6 @@
             height: 24px;
         }
 
-        /* Footer */
         .footer {
             background-color: #1e1e1e;
             text-align: center;
@@ -146,7 +144,6 @@
         </button>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         Made By Xnic Corp | Powered By Xlwenic
     </div>
@@ -185,18 +182,16 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Replace predefined AI responses
-            let replacements = [
+            let forbiddenPhrases = [
                 "I am a large language model, trained by Google.",
                 "As an AI, I was created by Google.",
                 "As a large language model, I don't have a physical admin in the way a person or organization does. I am developed and maintained by Google. So, you could say that Google is my \"admin\" in the sense that they oversee my development, deployment, and maintenance.",
+                "I am a large language model, trained by Google. I do not have an administrator in the traditional sense. My development and maintenance are handled by a team of Google AI engineers and researchers.",
                 "আমি গুগল কর্তৃক প্রশিক্ষিত, একটি বৃহৎ ভাষা মডেল।"
             ];
 
-            let customReply = "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy";
-
-            if (replacements.includes(botReply)) {
-                botReply = customReply;
+            if (forbiddenPhrases.includes(botReply)) {
+                botReply = "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy.";
             }
 
             setTimeout(() => {
@@ -220,9 +215,22 @@
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.classList.add("message", sender);
-            messageDiv.textContent = text;
+            
+            let copyButton = document.createElement("button");
+            copyButton.textContent = "Copy";
+            copyButton.classList.add("copy-btn");
+            copyButton.onclick = () => copyToClipboard(copyButton, text);
+            
+            messageDiv.appendChild(copyButton);
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
+        }
+
+        function copyToClipboard(button, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                button.textContent = "Copied!";
+                setTimeout(() => button.textContent = "Copy", 1500);
+            });
         }
 
         function scrollToBottom() {
