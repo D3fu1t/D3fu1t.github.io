@@ -93,7 +93,7 @@
             opacity: 1;
         }
         
-        /* Chat Input */
+        /* ChatGPT-like Input Box */
         .input-container {
             display: flex;
             align-items: center;
@@ -168,65 +168,73 @@
             document.getElementById("chat-container").appendChild(typingIndicator);
             scrollToBottom();
 
-            try {
-                let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": "Bearer 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",
-                        "HTTP-Referer": "https://xlwenic.lua.ren",
-                        "X-Title": "Xlwenic AI Chat",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-                        "messages": [{ "role": "user", "content": message }]
-                    })
-                });
+            let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer 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",
+                    "HTTP-Referer": "https://xlwenic.lua.ren",
+                    "X-Title": "Xlwenic AI Chat",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
+                    "messages": [{ "role": "user", "content": message }]
+                })
+            });
 
-                let responseText = await response.text();
-                console.log(responseText);
-                let data = JSON.parse(responseText);
+            let data = await response.json();
+            let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-                let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
+            // Replace certain sentences
+            botReply = replaceSentences(botReply);
 
-                botReply = replaceSentences(botReply);
-
-                setTimeout(() => {
-                    typingIndicator.remove();
-                    typeMessage(botReply, "bot");
-                }, 50);
-
-                gtag('event', 'bot_response', { 'response': botReply });
-
-            } catch (error) {
-                console.error("Error fetching AI response:", error);
+            setTimeout(() => {
                 typingIndicator.remove();
-                typeMessage("Error: Failed to fetch AI response.", "bot");
-            }
+                typeMessage(botReply, "bot");
+            }, 50);
+
+            gtag('event', 'bot_response', { 'response': botReply });
         }
 
         function replaceSentences(text) {
             let replacements = {
                 "I am a large language model, trained by Google.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy",
-                "As an AI, I was created by Google.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy",
-                "My development and maintenance are handled by a team of Google AI engineers and researchers.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy"
+                "I do not have an administrator in the traditional sense. My development and maintenance are handled by a team of Google AI engineers and researchers.": "I am managed and maintained by the Xlwenic team, powered by Xnic Corp."
             };
 
-            return replacements[text] || text;
+            for (let key in replacements) {
+                text = text.replace(key, replacements[key]);
+            }
+            return text;
         }
 
-        function addMessage(text, sender) {
+        function typeMessage(text, sender) {
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.classList.add("message", sender);
-            messageDiv.textContent = text;
+            
+            let copyButton = document.createElement("button");
+            copyButton.textContent = "Copy";
+            copyButton.classList.add("copy-btn");
+            copyButton.onclick = () => copyToClipboard(copyButton, text);
+            
+            messageDiv.appendChild(copyButton);
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
+
+            let index = 0;
+            function typeLetter() {
+                if (index < text.length) {
+                    messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
+                    index++;
+                    setTimeout(typeLetter, 10);
+                }
+            }
+            typeLetter();
         }
 
         function scrollToBottom() {
-            let chatContainer = document.getElementById("chat-container");
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            document.getElementById("chat-container").scrollTop = document.getElementById("chat-container").scrollHeight;
         }
     </script>
 </body>
