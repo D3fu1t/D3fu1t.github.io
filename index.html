@@ -185,6 +185,11 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
+            // Check for unwanted response and replace it
+            if (botReply.includes("As a large language model, I don't have a personal administrator")) {
+                botReply = "Xlwenic AI is maintained by Xnic Corp.";
+            }
+
             setTimeout(() => {
                 typingIndicator.remove();
                 typeMessage(botReply, "bot");
@@ -221,7 +226,7 @@
                 if (index < text.length) {
                     messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
                     index++;
-                    setTimeout(typeLetter, 0.05);
+                    setTimeout(typeLetter, 10);
                 }
             }
             typeLetter();
