@@ -92,7 +92,8 @@
         .bot:hover .copy-btn {
             opacity: 1;
         }
-
+        
+        /* Chat Input */
         .input-container {
             display: flex;
             align-items: center;
@@ -122,6 +123,7 @@
             height: 24px;
         }
 
+        /* Footer */
         .footer {
             background-color: #1e1e1e;
             text-align: center;
@@ -144,6 +146,7 @@
         </button>
     </div>
 
+    <!-- Footer -->
     <div class="footer">
         Made By Xnic Corp | Powered By Xlwenic
     </div>
@@ -165,41 +168,51 @@
             document.getElementById("chat-container").appendChild(typingIndicator);
             scrollToBottom();
 
-            let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer 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",
-                    "HTTP-Referer": "https://xlwenic.lua.ren",
-                    "X-Title": "Xlwenic AI Chat",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-                    "messages": [{ "role": "user", "content": message }]
-                })
-            });
+            try {
+                let response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer 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",
+                        "HTTP-Referer": "https://xlwenic.lua.ren",
+                        "X-Title": "Xlwenic AI Chat",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
+                        "messages": [{ "role": "user", "content": message }]
+                    })
+                });
 
-            let data = await response.json();
-            let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
+                let responseText = await response.text();
+                console.log(responseText);
+                let data = JSON.parse(responseText);
 
-            let forbiddenPhrases = [
-                "I am a large language model, trained by Google.",
-                "As an AI, I was created by Google.",
-                "As a large language model, I don't have a physical admin in the way a person or organization does. I am developed and maintained by Google. So, you could say that Google is my \"admin\" in the sense that they oversee my development, deployment, and maintenance.",
-                "I am a large language model, trained by Google. I do not have an administrator in the traditional sense. My development and maintenance are handled by a team of Google AI engineers and researchers.",
-                "আমি গুগল কর্তৃক প্রশিক্ষিত, একটি বৃহৎ ভাষা মডেল।"
-            ];
+                let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            if (forbiddenPhrases.includes(botReply)) {
-                botReply = "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy.";
-            }
+                botReply = replaceSentences(botReply);
 
-            setTimeout(() => {
+                setTimeout(() => {
+                    typingIndicator.remove();
+                    typeMessage(botReply, "bot");
+                }, 50);
+
+                gtag('event', 'bot_response', { 'response': botReply });
+
+            } catch (error) {
+                console.error("Error fetching AI response:", error);
                 typingIndicator.remove();
-                typeMessage(botReply, "bot");
-            }, 50);
+                typeMessage("Error: Failed to fetch AI response.", "bot");
+            }
+        }
 
-            gtag('event', 'bot_response', { 'response': botReply });
+        function replaceSentences(text) {
+            let replacements = {
+                "I am a large language model, trained by Google.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy",
+                "As an AI, I was created by Google.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy",
+                "My development and maintenance are handled by a team of Google AI engineers and researchers.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author: Al Baradi Joy"
+            };
+
+            return replacements[text] || text;
         }
 
         function addMessage(text, sender) {
@@ -209,28 +222,6 @@
             messageDiv.textContent = text;
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
-        }
-
-        function typeMessage(text, sender) {
-            let chatContainer = document.getElementById("chat-container");
-            let messageDiv = document.createElement("div");
-            messageDiv.classList.add("message", sender);
-            
-            let copyButton = document.createElement("button");
-            copyButton.textContent = "Copy";
-            copyButton.classList.add("copy-btn");
-            copyButton.onclick = () => copyToClipboard(copyButton, text);
-            
-            messageDiv.appendChild(copyButton);
-            chatContainer.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        function copyToClipboard(button, text) {
-            navigator.clipboard.writeText(text).then(() => {
-                button.textContent = "Copied!";
-                setTimeout(() => button.textContent = "Copy", 1500);
-            });
         }
 
         function scrollToBottom() {
