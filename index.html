@@ -57,7 +57,7 @@
             word-wrap: break-word;
             max-width: 100%;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             position: relative;
         }
         @keyframes fadeIn {
@@ -77,18 +77,20 @@
         }
         .copy-btn {
             font-size: 12px;
-            padding: 3px 6px;
+            padding: 5px 8px;
             background-color: #444;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-left: 8px;
-            display: none;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0;
             transition: opacity 0.2s ease-in-out;
         }
         .bot:hover .copy-btn {
-            display: inline-block;
+            opacity: 1;
         }
         
         /* ChatGPT-like Input Box */
@@ -183,14 +185,6 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Replace default AI disclaimer responses
-            if (
-                botReply.includes("I am a large language model, trained by Google.") ||
-                botReply.includes("আমি একটি বৃহৎ ভাষা মডেল, গুগল কর্তৃক প্রশিক্ষিত।")
-            ) {
-                botReply = "It’s Xlwenic and Made By Xnic Corp. Xnic Corp is using Google’s dataset for Xlwenic. The only founder of Xnic Corp is Al Baradi Joy. In the future, Xnic Corp will have its own dataset after completing training and experiments.";
-            }
-
             setTimeout(() => {
                 typingIndicator.remove();
                 typeMessage(botReply, "bot");
@@ -216,7 +210,7 @@
             let copyButton = document.createElement("button");
             copyButton.textContent = "Copy";
             copyButton.classList.add("copy-btn");
-            copyButton.onclick = () => copyToClipboard(text);
+            copyButton.onclick = () => copyToClipboard(copyButton, text);
             
             messageDiv.appendChild(copyButton);
             chatContainer.appendChild(messageDiv);
@@ -233,9 +227,10 @@
             typeLetter();
         }
 
-        function copyToClipboard(text) {
+        function copyToClipboard(button, text) {
             navigator.clipboard.writeText(text).then(() => {
-                alert("Copied to clipboard!");
+                button.textContent = "Copied!";
+                setTimeout(() => button.textContent = "Copy", 1500);
             });
         }
 
