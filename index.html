@@ -52,11 +52,17 @@
             border-radius: 10px;
             font-size: 16px;
             line-height: 1.5;
+            opacity: 0;
+            animation: fadeIn 0.1s ease-in forwards;
             word-wrap: break-word;
             max-width: 100%;
             display: flex;
             flex-direction: column;
             position: relative;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .user {
             background-color: #2a2a2a;
@@ -80,14 +86,13 @@
             position: absolute;
             top: 5px;
             right: 5px;
-            opacity: 0;
+            opacity: 0.7;
             transition: opacity 0.2s ease-in-out;
         }
-        .bot:hover .copy-btn {
+        .copy-btn:hover {
             opacity: 1;
         }
         
-        /* ChatGPT-like Input Box */
         .input-container {
             display: flex;
             align-items: center;
@@ -117,7 +122,6 @@
             height: 24px;
         }
 
-        /* Footer */
         .footer {
             background-color: #1e1e1e;
             text-align: center;
@@ -140,7 +144,6 @@
         </button>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         Made By Xnic Corp | Powered By Xlwenic
     </div>
@@ -179,6 +182,8 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
+            botReply = replaceCustomResponses(botReply);
+
             setTimeout(() => {
                 typingIndicator.remove();
                 typeMessage(botReply, "bot");
@@ -187,20 +192,25 @@
             gtag('event', 'bot_response', { 'response': botReply });
         }
 
-        function addMessage(text, sender) {
-            let chatContainer = document.getElementById("chat-container");
-            let messageDiv = document.createElement("div");
-            messageDiv.classList.add("message", sender);
-            messageDiv.textContent = text;
-            chatContainer.appendChild(messageDiv);
-            scrollToBottom();
+        function replaceCustomResponses(response) {
+            let replacements = {
+                "I am a large language model, trained by Google.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author : Al Baradi Joy",
+                "As an AI, I was created by Google.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author : Al Baradi Joy",
+                "My development and maintenance are handled by a team of Google AI engineers and researchers.": "It's Xlwenic | Made by Xnic Corp | Dataset Train By Google | Main Author : Al Baradi Joy"
+            };
+            Object.keys(replacements).forEach(key => {
+                if (response.includes(key)) {
+                    response = response.replace(key, replacements[key]);
+                }
+            });
+            return response;
         }
 
         function typeMessage(text, sender) {
             let chatContainer = document.getElementById("chat-container");
             let messageDiv = document.createElement("div");
             messageDiv.classList.add("message", sender);
-            
+
             let copyButton = document.createElement("button");
             copyButton.textContent = "Copy";
             copyButton.classList.add("copy-btn");
@@ -215,17 +225,16 @@
                 if (index < text.length) {
                     messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
                     index++;
-                    setTimeout(typeLetter, 10);
+                    setTimeout(typeLetter, 0.05);
                 }
             }
             typeLetter();
         }
 
         function copyToClipboard(button, text) {
-            navigator.clipboard.writeText(text).then(() => {
-                button.textContent = "Copied!";
-                setTimeout(() => button.textContent = "Copy", 1500);
-            });
+            navigator.clipboard.writeText(text);
+            button.textContent = "Copied!";
+            setTimeout(() => button.textContent = "Copy", 1500);
         }
 
         function scrollToBottom() {
