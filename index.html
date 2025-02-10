@@ -92,7 +92,7 @@
         .bot:hover .copy-btn {
             opacity: 1;
         }
-        
+
         /* ChatGPT-like Input Box */
         .input-container {
             display: flex;
@@ -185,9 +185,19 @@
             let data = await response.json();
             let botReply = data.choices?.[0]?.message?.content || "Error: No response from AI.";
 
-            // Check for unwanted response and replace it
-            if (botReply.includes("As a large language model, I don't have a personal administrator")) {
-                botReply = "Xlwenic AI is maintained by Xnic Corp.";
+            // Define unwanted responses and their replacements
+            const responseReplacements = {
+                "As a large language model, I don't have a personal administrator": "It's Xlwenic and Made by Xnic Corp | Maintaining By Google Dataset | Xnic Corp | Author : Al Baradi Joy",
+                "I'm developed and maintained by Google": "It's Xlwenic and Made by Xnic Corp | Maintaining By Google Dataset | Xnic Corp | Author : Al Baradi Joy",
+                "I'm an AI created by OpenAI": "It's Xlwenic and Made by Xnic Corp | Maintaining By Google Dataset | Xnic Corp | Author : Al Baradi Joy"
+            };
+
+            // Check and replace AI responses
+            for (let originalText in responseReplacements) {
+                if (botReply.includes(originalText)) {
+                    botReply = responseReplacements[originalText];
+                    break;
+                }
             }
 
             setTimeout(() => {
@@ -205,38 +215,6 @@
             messageDiv.textContent = text;
             chatContainer.appendChild(messageDiv);
             scrollToBottom();
-        }
-
-        function typeMessage(text, sender) {
-            let chatContainer = document.getElementById("chat-container");
-            let messageDiv = document.createElement("div");
-            messageDiv.classList.add("message", sender);
-            
-            let copyButton = document.createElement("button");
-            copyButton.textContent = "Copy";
-            copyButton.classList.add("copy-btn");
-            copyButton.onclick = () => copyToClipboard(copyButton, text);
-            
-            messageDiv.appendChild(copyButton);
-            chatContainer.appendChild(messageDiv);
-            scrollToBottom();
-
-            let index = 0;
-            function typeLetter() {
-                if (index < text.length) {
-                    messageDiv.insertBefore(document.createTextNode(text[index]), copyButton);
-                    index++;
-                    setTimeout(typeLetter, 10);
-                }
-            }
-            typeLetter();
-        }
-
-        function copyToClipboard(button, text) {
-            navigator.clipboard.writeText(text).then(() => {
-                button.textContent = "Copied!";
-                setTimeout(() => button.textContent = "Copy", 1500);
-            });
         }
 
         function scrollToBottom() {
